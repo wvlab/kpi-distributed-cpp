@@ -1,7 +1,7 @@
 CC ?= gcc
-CFLAGS := -I.
+CFLAGS += -I.
 CXX ?= g++
-CXXFLAGS := -I.
+CXXFLAGS += -I.
 SRCDIR := ./src
 OUTDIR := ./out
 
