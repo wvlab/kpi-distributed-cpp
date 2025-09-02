@@ -3,9 +3,33 @@
 #include <stdalign.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <string.h>
 #include <windows.h>
+#include <winnt.h>
 
 #pragma comment(lib, "iphlpapi.lib")
+
+char *get_arch_string(const DWORD arch)
+{
+        switch (arch) {
+        case PROCESSOR_ARCHITECTURE_INTEL:
+                return "x86";
+        case PROCESSOR_ARCHITECTURE_AMD64:
+                return "x64";
+        case PROCESSOR_ARCHITECTURE_ARM:
+                return "arm";
+        case PROCESSOR_ARCHITECTURE_ARM64:
+                return "arm64";
+        case PROCESSOR_ARCHITECTURE_MIPS:
+                return "mips";
+        case PROCESSOR_ARCHITECTURE_ALPHA:
+                return "mips";
+        case PROCESSOR_ARCHITECTURE_PPC:
+                return "powerpc";
+        default:
+                return "unknown";
+        }
+}
 
 int8_t get_os_info(struct KDC_OSInfo *info)
 {
@@ -15,7 +39,7 @@ int8_t get_os_info(struct KDC_OSInfo *info)
 
         OSVERSIONINFOEX osvi;
         SYSTEM_INFO si;
-        ZeroMemory(&osvi, sizeof(osvi));
+        memset(&osvi, 0, sizeof(osvi));
         osvi.dwOSVersionInfoSize = sizeof(osvi);
         GetVersionEx((OSVERSIONINFO *)&osvi);
         GetNativeSystemInfo(&si);
@@ -25,10 +49,13 @@ int8_t get_os_info(struct KDC_OSInfo *info)
             info->os_version, sizeof(info->os_version), "%lu.%lu (Build %lu)",
             osvi.dwMajorVersion, osvi.dwMinorVersion, osvi.dwBuildNumber
         );
-        snprintf(
-            info->arch, sizeof(info->arch),
-            si.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64 ? "x64"
-                                                                      : "x86"
+
+        char *arch = get_arch_string(si.wProcessorArchitecture);
+        unsigned int archlen = strlen(arch);
+        memcpy(
+            info->arch, arch,
+            ((sizeof(info->arch) - 1) < archlen) ? (sizeof(info->arch) - 1)
+                                                 : archlen
         );
         return 0;
 }
