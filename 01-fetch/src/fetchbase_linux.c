@@ -58,11 +58,12 @@ int8_t get_cpu_info(struct KDC_CPUInfo *info)
 
                         if (colon) {
                                 while (*(++colon) == ' ') {
-                                        strncpy(
-                                            model_name, colon,
-                                            sizeof(model_name) - 1
-                                        );
+                                        ;
                                 }
+
+                                strncpy(
+                                    model_name, colon, sizeof(model_name) - 1
+                                );
 
                                 size_t len = strlen(model_name);
                                 if (len > 0 && model_name[len - 1] == '\n') {
