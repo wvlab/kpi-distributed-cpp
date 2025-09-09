@@ -1,4 +1,5 @@
 CC ?= gcc
+WINCC ?= x86_64-w64-mingw32-gcc
 CFLAGS ?=
 CFLAGS += -I.
 SRCDIR := ./src
@@ -25,13 +26,14 @@ gtkgui:
 		$(shell pkg-config --libs gtk4)
 
 wingui: $(OUTDIR) $(SRCDIR)/fetchbase.c $(SRCDIR)/fetchgui_win.c
-	$(CC) \
+	$(WINCC) \
 		$(CFLAGS) \
 		$(SRCDIR)/fetchbase.c \
 		$(SRCDIR)/fetchgui_win.c \
 		-o $(OUTDIR)/gui.exe \
 		-lgdi32 \
-		-luser32
+		-luser32 \
+		-municode
 
 $(OUTDIR):
 	mkdir -p $(OUTDIR)
