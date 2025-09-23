@@ -5,7 +5,7 @@ CFLAGS += -I.
 SRCDIR := ./src
 OUTDIR := ./out
 
-all: cli gui
+all: cli gui report.pdf
 
 cli: $(OUTDIR) $(SRCDIR)/fetchbase.c $(SRCDIR)/fetchcli.c
 	$(CC) $(CFLAGS) $(SRCDIR)/fetchbase.c $(SRCDIR)/fetchcli.c -o $(OUTDIR)/cli
@@ -38,5 +38,13 @@ wingui: $(OUTDIR) $(SRCDIR)/fetchbase.c $(SRCDIR)/fetchgui_win.c
 $(OUTDIR):
 	mkdir -p $(OUTDIR)
 
+report.pdf:
+	latexmk \
+		-lualatex \
+		-shell-escape \
+		report/report.tex \
+		-outdir=$(OUTDIR)
+
 clean:
+	latexmk -C report/report.tex
 	rm -rf $(OUTDIR)
