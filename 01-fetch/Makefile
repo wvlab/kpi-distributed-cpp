@@ -1,14 +1,14 @@
-CC ?= gcc
-WINCC ?= x86_64-w64-mingw32-gcc
-CFLAGS ?=
-CFLAGS += -I.
+CXX ?= g++
+WINCXX ?= x86_64-w64-mingw32-g++
+CXXFLAGS ?= -std=c++17 -Wall -Wextra
+CXXFLAGS += -I.
 SRCDIR := ./src
 OUTDIR := ./out
 
-all: cli gui report.pdf
+all: cli gui
 
-cli: $(OUTDIR) $(SRCDIR)/fetchbase.c $(SRCDIR)/fetchcli.c
-	$(CC) $(CFLAGS) $(SRCDIR)/fetchbase.c $(SRCDIR)/fetchcli.c -o $(OUTDIR)/cli
+cli: $(OUTDIR) $(SRCDIR)/fetchbase.cpp $(SRCDIR)/fetchcli.cpp
+	$(CXX) $(CXXFLAGS) $(SRCDIR)/fetchbase.cpp $(SRCDIR)/fetchcli.cpp -o $(OUTDIR)/cli
 
 ifeq ($(OS), Windows_NT)
 gui: wingui
@@ -17,34 +17,29 @@ gui: gtkgui
 endif
 
 gtkgui:
-	$(CC) \
-		$(CFLAGS) \
+	$(CXX) \
+		$(CXXFLAGS) \
 		$(shell pkg-config --cflags gtk4) \
-		$(SRCDIR)/fetchbase.c \
-		$(SRCDIR)/fetchgui_gtk.c \
+		$(SRCDIR)/fetchbase.cpp \
+		$(SRCDIR)/fetchgui_gtk.cpp \
 		-o $(OUTDIR)/gui \
 		$(shell pkg-config --libs gtk4)
 
-wingui: $(OUTDIR) $(SRCDIR)/fetchbase.c $(SRCDIR)/fetchgui_win.c
-	$(WINCC) \
-		$(CFLAGS) \
-		$(SRCDIR)/fetchbase.c \
-		$(SRCDIR)/fetchgui_win.c \
+wingui: $(OUTDIR) $(SRCDIR)/fetchbase.cpp $(SRCDIR)/fetchgui_win.cpp
+	$(WINCXX) \
+		$(CXXFLAGS) \
+		$(SRCDIR)/fetchbase.cpp \
+		$(SRCDIR)/fetchgui_win.cpp \
 		-o $(OUTDIR)/gui.exe \
 		-lgdi32 \
 		-luser32 \
-		-municode
+		-lws2_32 \
+		-liphlpapi \
+		-municode \
+		-static-libgcc -static-libstdc++
 
 $(OUTDIR):
 	mkdir -p $(OUTDIR)
 
-report.pdf:
-	latexmk \
-		-lualatex \
-		-shell-escape \
-		report/report.tex \
-		-outdir=$(OUTDIR)
-
 clean:
-	latexmk -C report/report.tex
 	rm -rf $(OUTDIR)

@@ -32,11 +32,10 @@ struct KDC_UptimeInfo {
         uint64_t uptime_seconds;
 };
 
-// Функції
 int8_t get_os_info(struct KDC_OSInfo *info);
 int8_t get_cpu_info(struct KDC_CPUInfo *info);
 int8_t get_ram_info(struct KDC_RAMInfo *info);
 int8_t get_network_info(struct KDC_NetworkInfo *info);
 int8_t get_uptime_info(struct KDC_UptimeInfo *info);
 
-#endif // _M_DISTRIBUTED_CPP_FETCH_BASE_H
+#endif
